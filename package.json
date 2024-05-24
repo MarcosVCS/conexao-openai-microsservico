@@ -1,0 +1,26 @@
+{
+  "name": "conexao-openai-microsservico",
+  "version": "1.0.0",
+  "description": "Microsserviço que se conecta à API da OpenAI, devolvendo respostas produzidas pelo GPT",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarcosVCS/conexao-openai-microsservico.git"
+  },
+  "author": "Marcos Valente",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MarcosVCS/conexao-openai-microsservico/issues"
+  },
+  "homepage": "https://github.com/MarcosVCS/conexao-openai-microsservico#readme",
+  "dependencies": {
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12"
+  }
+}
