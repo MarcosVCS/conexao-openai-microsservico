@@ -14,6 +14,7 @@ export class Controller {
     
     consultarOpenAI = async (req: Request, res: Response) => {
         
+        // SERIA TRY/CATCH MESMO?
         try {
 
             const requestDTO = new RequestDTO(req);
