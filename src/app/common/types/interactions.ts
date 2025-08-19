@@ -1,7 +1,7 @@
-export type TInteracoes = {
+export type TInteractions = {
   role: "system" | "user" | "assistant";
   content: String;
 };
 
-// Desenvolver
+// DEV: Desenvolver
 export type TFunctionSpecs = {};

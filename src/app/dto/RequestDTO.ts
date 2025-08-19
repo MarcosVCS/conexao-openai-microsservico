@@ -1,29 +1,24 @@
-import { TFunctionSpecs, TInteracoes } from "../types/tiposConsulta";
+import { TFunctionSpecs, TInteractions } from "../common/types/interactions";
 
 export class RequestDTO {
-  openAIKeyJwt: string;
   gptModel: string;
   temperature: number;
   maxTokens: number;
   prompt: string;
   functionSpecs: TFunctionSpecs[];
-  interacoes: TInteracoes[];
+  interacoes: TInteractions[];
   mensagem: string;
 
   constructor(requestData: any) {
-    this.openAIKeyJwt = requestData.openAIKey;
     this.gptModel = requestData.gptModel;
     this.temperature = requestData.temperature;
     this.maxTokens = requestData.maxTokens;
     this.prompt = requestData.prompt;
-    this.functionSpecs = requestData.functionSpecs;
     this.interacoes = requestData.interacoes;
     this.mensagem = requestData.mensagem;
+    this.functionSpecs = requestData.functionSpecs;
   }
 
-  getOpenAIKeyJwt() {
-    return this.openAIKeyJwt;
-  }
   getGPTModel() {
     return this.gptModel;
   }
@@ -36,13 +31,13 @@ export class RequestDTO {
   getPrompt() {
     return this.prompt;
   }
-  getFunctionSpecs() {
-    return this.functionSpecs;
-  }
   getInteracoes() {
     return this.interacoes;
   }
   getMensagem() {
     return this.mensagem;
+  }
+  getFunctionSpecs() {
+    return this.functionSpecs;
   }
 }

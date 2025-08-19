@@ -1,24 +1,25 @@
 import { RequestDTO } from "../dto/RequestDTO";
-import CustomError from "../errors/CustomError";
-import { errorType } from "../errors/errorType";
-import { TFunctionSpecs, TInteracoes } from "../types/tiposConsulta";
-import { ehNumeroValido } from "../utils/validacaoNumero";
+import CustomError from "../common/classes/CustomError";
+import { Errors } from "../common/enums/Errors";
+import { HttpStatus } from "../common/enums/HttpStatus";
+import { TFunctionSpecs, TInteractions } from "../common/types/interactions";
+import { isValidNumber } from "../utils/numberValidation";
+
+// DEV: TRADUZIR TUDO PARA INGLÊS
 
 export class Consulta {
-  openAIKey: string;
   gptModel: string;
   temperature: number;
   maxTokens: number;
   prompt: string;
   functionSpecs: TFunctionSpecs[];
-  interacoes: TInteracoes[];
+  interacoes: TInteractions[];
   mensagem: string;
   resposta: string;
-  sequenciaMensagens: TInteracoes[];
+  sequenciaMensagens: TInteractions[];
   consultaValidada: boolean = false;
 
   constructor(requestDTO: RequestDTO) {
-    this.openAIKey = this.validarOpenAIKeyJwt(requestDTO.getOpenAIKeyJwt());
     this.gptModel = requestDTO.getGPTModel();
     this.temperature = this.validarTemperature(requestDTO.getTemperature());
     this.maxTokens = this.validarMaxTokens(requestDTO.getMaxTokens());
@@ -30,7 +31,7 @@ export class Consulta {
     this.mensagem = requestDTO.getMensagem();
   }
 
-  // Desenvolver
+  // DEV: Desenvolver
   private formatarInteracoes() {
     this.sequenciaMensagens = [
       {
@@ -44,60 +45,51 @@ export class Consulta {
     this.sequenciaMensagens.push({ role: "user", content: this.mensagem });
   }
 
-  // Desenvolver
-  private validarOpenAIKeyJwt(jwt: string) {
-    try {
-      return "";
-    } catch (error) {
-      throw new CustomError(errorType.VALIDACAO_OPENAI_KEY);
-    }
-  }
-
   private validarTemperature(temperature: any) {
-    if (ehNumeroValido(temperature)) {
+    if (isValidNumber(temperature)) {
       return temperature;
     }
-    throw new CustomError(errorType.VALIDACAO_ESPECIFICACOES_GPT);
+    throw new CustomError(
+      Errors.VALIDACAO_ESPECIFICACOES_GPT,
+      HttpStatus.InvalidRequest
+    );
   }
 
   private validarMaxTokens(maxTokens: any) {
-    if (ehNumeroValido(maxTokens)) {
+    if (isValidNumber(maxTokens)) {
       return maxTokens;
     }
-    throw new CustomError(errorType.VALIDACAO_ESPECIFICACOES_GPT);
+    throw new CustomError(
+      Errors.VALIDACAO_ESPECIFICACOES_GPT,
+      HttpStatus.InvalidRequest
+    );
   }
 
-  // Desenvolver
+  // DEV: Desenvolver
   private validarFunctionSpecs() {
     if (this.functionSpecs) {
     }
   }
 
   validarRequest() {
-    if (
-      !this.openAIKey ||
-      !this.gptModel ||
-      !this.temperature ||
-      !this.maxTokens
-    ) {
-      throw new CustomError(errorType.VALIDACAO_ESPECIFICACOES_GPT);
+    if (!this.gptModel || !this.temperature || !this.maxTokens) {
+      throw new CustomError(
+        Errors.VALIDACAO_ESPECIFICACOES_GPT,
+        HttpStatus.InvalidRequest
+      );
     }
 
     if (!this.prompt || !this.mensagem) {
-      throw new CustomError(errorType.VALIDACAO_ATRIBUTOS_CONSULTA);
+      throw new CustomError(
+        Errors.VALIDACAO_ATRIBUTOS_CONSULTA,
+        HttpStatus.InvalidRequest
+      );
     }
 
     this.validarFunctionSpecs();
 
     this.consultaValidada = true;
     return this;
-  }
-
-  getOpenAIKey() {
-    if (this.consultaValidada) {
-      return this.openAIKey;
-    }
-    throw new CustomError(errorType.VALIDACAO_OPENAI_KEY);
   }
 
   getGptModel() {

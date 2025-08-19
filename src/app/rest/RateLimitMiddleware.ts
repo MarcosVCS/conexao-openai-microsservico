@@ -1,18 +1,18 @@
-import rateLimit from 'express-rate-limit';
+import rateLimit from "express-rate-limit";
 
 export class RateLimitMiddleware {
-    private rateLimiter;
+  private rateLimiter;
 
-    constructor(tentativasPorMinuto: number) {
-        this.rateLimiter = rateLimit({
-            windowMs: 60 * 1000, // 1 minuto
-            max: tentativasPorMinuto,
-            message:
-                'Limite de requisições excedido. Espere um pouco e tente novamente.',
-        });
-    }
+  constructor(tentativasPorMinuto: number) {
+    this.rateLimiter = rateLimit({
+      windowMs: 60 * 1000, // 1 minuto
+      max: tentativasPorMinuto,
+      message:
+        "Limite de requisições excedido. Espere um pouco e tente novamente.",
+    });
+  }
 
-    protegerRota() {
-        return this.rateLimiter;
-    }
+  protect() {
+    return this.rateLimiter;
+  }
 }

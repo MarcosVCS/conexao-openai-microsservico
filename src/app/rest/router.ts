@@ -3,13 +3,13 @@ import { RateLimitMiddleware } from "./RateLimitMiddleware";
 import { Controller } from "./Controller";
 import { Service } from "../service/Service";
 
-// Necessário instanciar o service?
 const controller = new Controller(new Service());
-
 const router = Router();
 
-const rateLimiter = new RateLimitMiddleware(3); // Permite somente 3 consultas por minuto
+// DEV: Necessário um middleware para verificar permissão do usuário
 
-router.route("/").post(rateLimiter.protegerRota(), controller.consultarOpenAI);
+const rateLimiter = new RateLimitMiddleware(3); // Allows 3 interactions per minute
+
+router.route("/").post(rateLimiter.protect(), controller.requestOpenAi);
 
 export default router;

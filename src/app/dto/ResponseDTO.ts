@@ -1,6 +1,6 @@
-export class ResponseDTO{
-    constructor(resultadoConsulta: any){
-
-        return {}
-    }
+export class ResponseDTO {
+  constructor(resultadoConsulta: any) {
+    // DEV: DESENVOLVER
+    return {};
+  }
 }
