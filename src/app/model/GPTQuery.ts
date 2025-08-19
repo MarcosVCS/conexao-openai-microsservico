@@ -3,11 +3,11 @@ import CustomError from "../common/classes/CustomError";
 import { Errors } from "../common/enums/Errors";
 import { HttpStatus } from "../common/enums/HttpStatus";
 import { TFunctionSpecs, TInteractions } from "../common/types/interactions";
-import { isValidNumber } from "../utils/numberValidation";
+import { isValidNumber } from "../common/utils/numberValidation";
 
 // DEV: TRADUZIR TUDO PARA INGLÊS
 
-export class Consulta {
+export class GPTQuery {
   gptModel: string;
   temperature: number;
   maxTokens: number;
@@ -40,7 +40,7 @@ export class Consulta {
       },
     ];
 
-    // Push nas interações anteriores (Como virão?)
+    // DEV: Push nas interações anteriores (Como virão?)
 
     this.sequenciaMensagens.push({ role: "user", content: this.mensagem });
   }
@@ -49,8 +49,8 @@ export class Consulta {
     if (isValidNumber(temperature)) {
       return temperature;
     }
-    throw new CustomError(
-      Errors.VALIDACAO_ESPECIFICACOES_GPT,
+    throw new CustomError( // DEV: Este código está se repetindo muito nesta classe
+      Errors.GPT_SPECIFICATIONS_INVALID,
       HttpStatus.InvalidRequest
     );
   }
@@ -60,7 +60,7 @@ export class Consulta {
       return maxTokens;
     }
     throw new CustomError(
-      Errors.VALIDACAO_ESPECIFICACOES_GPT,
+      Errors.GPT_SPECIFICATIONS_INVALID,
       HttpStatus.InvalidRequest
     );
   }
@@ -74,14 +74,14 @@ export class Consulta {
   validarRequest() {
     if (!this.gptModel || !this.temperature || !this.maxTokens) {
       throw new CustomError(
-        Errors.VALIDACAO_ESPECIFICACOES_GPT,
+        Errors.GPT_SPECIFICATIONS_INVALID,
         HttpStatus.InvalidRequest
       );
     }
 
     if (!this.prompt || !this.mensagem) {
       throw new CustomError(
-        Errors.VALIDACAO_ATRIBUTOS_CONSULTA,
+        Errors.QUERY_FIELDS_MISSING,
         HttpStatus.InvalidRequest
       );
     }

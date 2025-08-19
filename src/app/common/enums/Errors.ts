@@ -1,6 +1,6 @@
 export enum Errors {
   NO_OPENAI_KEY = "No OpenAi Key specified", // DEV: Traduzir erros para inglês
-  VALIDACAO_ESPECIFICACOES_GPT = "Especificações do GPT não foram informadas corretamente",
-  VALIDACAO_ATRIBUTOS_CONSULTA = "Campos essenciais da consulta não foram informados",
-  ERRO_GPT = "Erro ao consumir serviço da OpenAI",
+  GPT_SPECIFICATIONS_INVALID = "GPT specifications were not provided correctly",
+  QUERY_FIELDS_MISSING = "Essential query fields were not provided",
+  GPT_SERVICE_ERROR = "Error consuming the OpenAI service",
 }

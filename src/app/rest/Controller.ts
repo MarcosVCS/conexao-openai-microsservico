@@ -15,7 +15,7 @@ export class Controller {
   requestOpenAi = async (req: Request, res: Response) => {
     try {
       const requestDTO = new RequestDTO(req);
-      const resultado = await this.service.interactOpenAi(requestDTO);
+      const resultado = await this.service.interactWithOpenAi(requestDTO);
       const responseDTO = new ResponseDTO(resultado);
 
       res.status(HttpStatus.Success).json(responseDTO);
