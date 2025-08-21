@@ -3,29 +3,30 @@ import { HttpStatus } from "../common/enums/HttpStatus";
 import { RequestDTO } from "../dto/RequestDTO";
 import CustomError from "../common/classes/CustomError.js";
 import { Errors } from "../common/enums/Errors";
-import { GPTQuery } from "../model/GPTQuery";
+import { Interaction } from "../model/Interaction";
 
 export class Service {
-  openai: OpenAI;
+  openAiAgent: OpenAI;
 
   constructor() {
     const openAiKey = process.env.OPEN_AI_KEY;
-    this.openai = new OpenAI({ apiKey: openAiKey });
+    this.openAiAgent = new OpenAI({ apiKey: openAiKey });
   }
 
   interactWithOpenAi = async (requestDTO: RequestDTO) => {
-    const query = new GPTQuery(requestDTO).validarRequest();
-
+    const query = new Interaction(requestDTO).verifyRequest();
+    // DEV: GPT analisa outras coisas além de texto agora (imagens, arquivos etc.)
     // DEV: Criar uma classe para isso?
     try {
-      await this.openai.chat.completions.create({
+      const response = await this.openAiAgent.responses.create({
         model: query.getGptModel(),
-        messages: query.getSequenciaMensagens(),
-        max_tokens: query.getMaxTokens(),
+        input: query.getInputSequence(),
+        max_output_tokens: query.getMaxTokens(),
         temperature: query.getTemperature(),
-        response_format: { type: "json_object" },
-        tools: query.getFunctionSpecs(),
+        tools: query.getToolFunctionSpecs(),
       });
+
+      return new Interaction(response).verifyResponse();
     } catch (e) {
       console.error(e);
       throw new CustomError(

@@ -1,21 +1,19 @@
-import { TFunctionSpecs, TInteractions } from "../common/types/interactions";
-
 export class RequestDTO {
   gptModel: string;
   temperature: number;
   maxTokens: number;
   prompt: string;
-  functionSpecs: TFunctionSpecs[];
-  interacoes: TInteractions[];
-  mensagem: string;
+  functionSpecs: any; // DEV: TIPAR
+  previousInteractions: any; // DEV: TIPAR
+  message: string;
 
   constructor(requestData: any) {
     this.gptModel = requestData.gptModel;
-    this.temperature = requestData.temperature;
-    this.maxTokens = requestData.maxTokens;
     this.prompt = requestData.prompt;
-    this.interacoes = requestData.interacoes;
-    this.mensagem = requestData.mensagem;
+    this.previousInteractions = requestData.previousInteractions;
+    this.message = requestData.message;
+    this.maxTokens = requestData.maxTokens;
+    this.temperature = requestData.temperature;
     this.functionSpecs = requestData.functionSpecs;
   }
 
@@ -31,11 +29,11 @@ export class RequestDTO {
   getPrompt() {
     return this.prompt;
   }
-  getInteracoes() {
-    return this.interacoes;
+  getPreviousInteractions() {
+    return this.previousInteractions;
   }
-  getMensagem() {
-    return this.mensagem;
+  getMessage() {
+    return this.message;
   }
   getFunctionSpecs() {
     return this.functionSpecs;

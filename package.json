@@ -17,10 +17,12 @@
   "dependencies": {
     "express": "^4.19.2",
     "express-rate-limit": "^7.2.0",
+    "jsonwebtoken": "^9.0.2",
     "openai": "^5.12.2"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.12.12",
     "prettier": "^3.6.2"
   }
