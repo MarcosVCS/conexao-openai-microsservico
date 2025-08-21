@@ -4,8 +4,9 @@ import { Errors } from "../common/enums/Errors";
 import { HttpStatus } from "../common/enums/HttpStatus";
 import { isValidNumber } from "../common/utils/numberValidation";
 import { isValidString } from "../common/utils/stringValidation";
+import { ResponseInputItem } from "openai/resources/responses/responses";
+import { Reasoning } from "openai/resources/shared";
 
-// DEV: ESSA CLASSE AQUI TÁ MUITO DESATUALIZADA
 /**
  * INPUT:
  * model: "gpt-5",
@@ -39,22 +40,15 @@ import { isValidString } from "../common/utils/stringValidation";
 
  */
 
-type TInteraction = {
-  role: "developer" | "user" | "assistant";
-  content: String;
-};
-
-type TResoaning = { effort: "low" | "medium" | "high" };
-
 export class Interaction {
   gptModel: string;
   maxTokens: number;
   temperature: number;
-  reasoning: TResoaning | null = null;
+  reasoning: Reasoning | null = null;
   prompt: string;
-  previousInteractions: TInteraction[] = [];
+  previousInteractions: ResponseInputItem[] = [];
   message: string;
-  inputSequence: TInteraction[] = []; // DEV: DESENVOLVER TIPAGEM
+  inputSequence: ResponseInputItem[] = [];
   gptAnswer: string = "";
 
   constructor(requestDTO: RequestDTO) {
@@ -98,7 +92,7 @@ export class Interaction {
   }
 
   // DEV: Somente deve retornar quando o modelo for gpt-5 ou o-series
-  private verifyReasoning(reasoning: any): TResoaning {
+  private verifyReasoning(reasoning: any): Reasoning {
     if (reasoning !== "low" && reasoning !== "medium" && reasoning !== "high") {
       this.throwInvalidSpecsError("resoaning");
     }
@@ -121,11 +115,8 @@ export class Interaction {
 
   // DEV: Desenvolver critérios
   private verifyPreviousInteractions(interactions: any) {
-    if (isValidString(interactions)) {
-      // DEV: VEM STRING MESMO?
-      return interactions;
-    }
-    this.throwInvalidSpecsError("previous interactions");
+    // DEV: for-loop nas interações, verificar campos... se tiver algum mal formatado, lançar erro
+    // this.throwInvalidSpecsError("previous interactions");
   }
 
   private formatInputSequence() {
@@ -135,7 +126,7 @@ export class Interaction {
     });
 
     if (this.previousInteractions.length != 0) {
-      // DEV: Push nas interações anteriores (Como virão?)
+      this.inputSequence.push(...this.previousInteractions);
     }
 
     this.inputSequence.push({ role: "user", content: this.message });
@@ -157,7 +148,7 @@ export class Interaction {
     return this;
   }
 
-  throwInvalidSpecsError(field: string) {
+  throwInvalidSpecsError(field: string): void {
     const msg = Errors.GPT_SPECIFICATIONS_INVALID + ": " + field;
     throw new CustomError(msg, HttpStatus.InvalidRequest);
   }

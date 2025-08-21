@@ -20,7 +20,7 @@ export class Service {
     try {
       const response = await this.openAiAgent.responses.create({
         model: query.getGptModel(),
-        resoaning: query.getReasoning(),
+        reasoning: query.getReasoning(),
         input: query.getInputSequence(),
         max_output_tokens: query.getMaxTokens(),
         temperature: query.getTemperature(),
