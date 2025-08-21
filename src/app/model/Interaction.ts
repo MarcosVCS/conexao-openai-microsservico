@@ -42,19 +42,23 @@ import { Reasoning } from "openai/resources/shared";
 
 export class Interaction {
   gptModel: string;
-  maxTokens: number;
-  temperature: number;
+  maxTokens: number | null = null;
+  temperature: number | null = null;
   reasoning: Reasoning | null = null;
   prompt: string;
   previousInteractions: ResponseInputItem[] = [];
   message: string;
   inputSequence: ResponseInputItem[] = [];
-  gptAnswer: string = "";
+  gptAnswer: string | null = null;
 
   constructor(requestDTO: RequestDTO) {
-    this.gptModel = requestDTO.getGPTModel();
-    this.temperature = this.verifyTemperature(requestDTO.getTemperature());
-    this.maxTokens = this.verifyMaxTokens(requestDTO.getMaxTokens());
+    this.gptModel = this.verifyGPTModel(requestDTO.getGPTModel());
+    if (requestDTO.getTemperature()) {
+      this.temperature = this.verifyTemperature(requestDTO.getTemperature());
+    }
+    if (requestDTO.getMaxTokens() != null) {
+      this.maxTokens = this.verifyMaxTokens(requestDTO.getMaxTokens());
+    }
     if (requestDTO.getReasoning() != null) {
       this.reasoning = this.verifyReasoning(requestDTO.getReasoning());
     }
@@ -67,6 +71,18 @@ export class Interaction {
     this.message = this.verifyMessage(requestDTO.getMessage());
 
     this.formatInputSequence();
+  }
+
+  private verifyGPTModel(gptModel: any) {
+    if (gptModel == null) {
+      return process.env.DEFAULT_GPT_MODEL;
+    }
+
+    if (!isValidString(gptModel)) {
+      this.throwInvalidSpecsError("GPT Model");
+    }
+
+    return gptModel;
   }
 
   private verifyTemperature(temperature: any) {
@@ -86,6 +102,12 @@ export class Interaction {
     }
 
     if (isValidNumber(maxTokens)) {
+      const MAX_TOKENS_ALLOWED = parseInt(process.env.MAX_TOKENS);
+
+      if (maxTokens > MAX_TOKENS_ALLOWED) {
+        return MAX_TOKENS_ALLOWED;
+      }
+
       return maxTokens;
     }
     this.throwInvalidSpecsError("maxTokens");
