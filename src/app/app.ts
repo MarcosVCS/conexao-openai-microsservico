@@ -5,9 +5,9 @@ import { Errors } from "./common/enums/Errors";
 import router from "./rest/router";
 import CustomError from "./common/classes/CustomError";
 
-const apiBasePath = process.env.API_BASE_PATH;
 const port = process.env.PORT ?? 5000;
 const host = process.env.HOST;
+const apiBasePath = process.env.API_BASE_PATH;
 
 const app = express();
 

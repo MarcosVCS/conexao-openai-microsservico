@@ -2,7 +2,6 @@ import { RequestDTO } from "../dto/RequestDTO";
 import CustomError from "../common/classes/CustomError";
 import { Errors } from "../common/enums/Errors";
 import { HttpStatus } from "../common/enums/HttpStatus";
-import { TRoles, TToolFunctionSpecs } from "../common/types/queryTypes";
 import { isValidNumber } from "../common/utils/numberValidation";
 import { isValidString } from "../common/utils/stringValidation";
 
@@ -53,7 +52,7 @@ export class Interaction {
   previousInteractions: TInteraction[] = [];
   message: string;
   inputSequence: TInteraction[] = []; // DEV: DESENVOLVER TIPAGEM
-  toolFunctionSpecs: TToolFunctionSpecs[];
+  toolFunctionSpecs: any; // DEV: DESENVOLVER TIPAGEM
   queryVerified: boolean = false;
   gptAnswer: string = "";
 
@@ -79,25 +78,19 @@ export class Interaction {
     if (temperature >= 0 && temperature <= 2) {
       return temperature;
     }
-    throw new CustomError( // DEV: Este código está se repetindo muito nesta classe (tem que passar o que há de errado)
-      Errors.GPT_SPECIFICATIONS_INVALID,
-      HttpStatus.InvalidRequest
-    );
+    this.throwInvalidSpecsError("temperature");
   }
 
   private verifyMaxTokens(maxTokens: any) {
     if (isValidNumber(maxTokens)) {
       return maxTokens;
     }
-    throw new CustomError(
-      Errors.GPT_SPECIFICATIONS_INVALID,
-      HttpStatus.InvalidRequest
-    );
+    this.throwInvalidSpecsError("maxTokens");
   }
 
   // DEV: Desenvolver
   private verifyFunctionSpecs() {
-    if (this.functionSpecs) {
+    if (this.toolFunctionSpecs) {
     }
   }
 
@@ -105,10 +98,7 @@ export class Interaction {
     if (isValidString(prompt)) {
       return prompt;
     }
-    throw new CustomError(
-      Errors.GPT_SPECIFICATIONS_INVALID,
-      HttpStatus.InvalidRequest
-    );
+    this.throwInvalidSpecsError("prompt");
   }
 
   // DEV: Desenvolver critérios
@@ -116,21 +106,16 @@ export class Interaction {
     if (isValidString(message)) {
       return message;
     }
-    throw new CustomError(
-      Errors.GPT_SPECIFICATIONS_INVALID,
-      HttpStatus.InvalidRequest
-    );
+    this.throwInvalidSpecsError("message");
   }
 
   // DEV: Desenvolver critérios (Lembrando: pode vir null)
   private verifyPreviousInteractions(interactions: any) {
     if (isValidString(interactions)) {
+      // DEV: VEM STRING MESMO?
       return interactions;
     }
-    throw new CustomError(
-      Errors.GPT_SPECIFICATIONS_INVALID,
-      HttpStatus.InvalidRequest
-    );
+    this.throwInvalidSpecsError("previous interactions");
   }
 
   private formatInputSequence() {
@@ -144,14 +129,8 @@ export class Interaction {
     this.inputSequence.push({ role: "user", content: this.message });
   }
 
+  // DEV: CONTINUAR DESENVOLVIMENTO
   verifyRequest() {
-    if (!this.gptModel || !this.temperature || !this.maxTokens) {
-      throw new CustomError(
-        Errors.GPT_SPECIFICATIONS_INVALID,
-        HttpStatus.InvalidRequest
-      );
-    }
-
     if (!this.prompt || !this.message) {
       throw new CustomError(
         Errors.QUERY_FIELDS_MISSING,
@@ -168,6 +147,11 @@ export class Interaction {
   // DEV: DESENVOLVER
   verifyResponse() {
     return this;
+  }
+
+  throwInvalidSpecsError(field: string) {
+    const msg = Errors.GPT_SPECIFICATIONS_INVALID + ": " + field;
+    throw new CustomError(msg, HttpStatus.InvalidRequest);
   }
 
   getGptModel() {
