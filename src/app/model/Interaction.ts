@@ -44,54 +44,65 @@ type TInteraction = {
   content: String;
 };
 
+type TResoaning = { effort: "low" | "medium" | "high" };
+
 export class Interaction {
   gptModel: string;
-  temperature: number;
   maxTokens: number;
+  temperature: number;
+  reasoning: TResoaning | null = null;
   prompt: string;
   previousInteractions: TInteraction[] = [];
   message: string;
   inputSequence: TInteraction[] = []; // DEV: DESENVOLVER TIPAGEM
-  toolFunctionSpecs: any; // DEV: DESENVOLVER TIPAGEM
-  queryVerified: boolean = false;
   gptAnswer: string = "";
 
   constructor(requestDTO: RequestDTO) {
     this.gptModel = requestDTO.getGPTModel();
     this.temperature = this.verifyTemperature(requestDTO.getTemperature());
     this.maxTokens = this.verifyMaxTokens(requestDTO.getMaxTokens());
+    if (requestDTO.getReasoning() != null) {
+      this.reasoning = this.verifyReasoning(requestDTO.getReasoning());
+    }
     this.prompt = this.verifyPrompt(requestDTO.getPrompt());
-    this.toolFunctionSpecs = this.verifyFunctionSpecs(
-      requestDTO.getToolFunctionSpecs()
-    );
+    if (requestDTO.getPreviousInteractions() != null) {
+      this.previousInteractions = this.verifyPreviousInteractions(
+        requestDTO.getPreviousInteractions()
+      );
+    }
     this.message = this.verifyMessage(requestDTO.getMessage());
 
-    // DEV: Lembrando que aqui pode vir nulo
-    this.previousInteractions = this.verifyPreviousInteractions(
-      requestDTO.getPreviousInteractions()
-    );
+    this.formatInputSequence();
   }
 
   private verifyTemperature(temperature: any) {
-    // DEV: converter temperature para number se vier como string
+    if (isValidString(temperature)) {
+      temperature = parseInt(temperature);
+    }
 
-    if (temperature >= 0 && temperature <= 2) {
+    if (isValidNumber(temperature) && temperature >= 0 && temperature <= 2) {
       return temperature;
     }
     this.throwInvalidSpecsError("temperature");
   }
 
   private verifyMaxTokens(maxTokens: any) {
+    if (isValidString(maxTokens)) {
+      maxTokens = parseInt(maxTokens);
+    }
+
     if (isValidNumber(maxTokens)) {
       return maxTokens;
     }
     this.throwInvalidSpecsError("maxTokens");
   }
 
-  // DEV: Desenvolver
-  private verifyFunctionSpecs() {
-    if (this.toolFunctionSpecs) {
+  // DEV: Somente deve retornar quando o modelo for gpt-5 ou o-series
+  private verifyReasoning(reasoning: any): TResoaning {
+    if (reasoning !== "low" && reasoning !== "medium" && reasoning !== "high") {
+      this.throwInvalidSpecsError("resoaning");
     }
+    return { effort: reasoning };
   }
 
   private verifyPrompt(prompt: any) {
@@ -101,7 +112,6 @@ export class Interaction {
     this.throwInvalidSpecsError("prompt");
   }
 
-  // DEV: Desenvolver critérios
   private verifyMessage(message: any) {
     if (isValidString(message)) {
       return message;
@@ -109,7 +119,7 @@ export class Interaction {
     this.throwInvalidSpecsError("message");
   }
 
-  // DEV: Desenvolver critérios (Lembrando: pode vir null)
+  // DEV: Desenvolver critérios
   private verifyPreviousInteractions(interactions: any) {
     if (isValidString(interactions)) {
       // DEV: VEM STRING MESMO?
@@ -124,12 +134,13 @@ export class Interaction {
       content: this.prompt,
     });
 
-    // DEV: Push nas interações anteriores (Como virão?)
+    if (this.previousInteractions.length != 0) {
+      // DEV: Push nas interações anteriores (Como virão?)
+    }
 
     this.inputSequence.push({ role: "user", content: this.message });
   }
 
-  // DEV: CONTINUAR DESENVOLVIMENTO
   verifyRequest() {
     if (!this.prompt || !this.message) {
       throw new CustomError(
@@ -138,9 +149,6 @@ export class Interaction {
       );
     }
 
-    this.verifyFunctionSpecs();
-
-    this.queryVerified = true; // DEV: Qual necessidade disso?
     return this;
   }
 
@@ -162,16 +170,16 @@ export class Interaction {
     return this.inputSequence;
   }
 
+  getReasoning() {
+    return this.reasoning;
+  }
+
   getMaxTokens() {
     return this.maxTokens;
   }
 
   getTemperature() {
     return this.temperature;
-  }
-
-  getToolFunctionSpecs() {
-    return this.toolFunctionSpecs;
   }
 
   setGPTAnswer(gptAnswer: string) {

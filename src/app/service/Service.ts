@@ -16,14 +16,14 @@ export class Service {
   interactWithOpenAi = async (requestDTO: RequestDTO) => {
     const query = new Interaction(requestDTO).verifyRequest();
     // DEV: GPT analisa outras coisas além de texto agora (imagens, arquivos etc.)
-    // DEV: Criar uma classe para isso?
+    // DEV: Tembém chama funções
     try {
       const response = await this.openAiAgent.responses.create({
         model: query.getGptModel(),
+        resoaning: query.getReasoning(),
         input: query.getInputSequence(),
         max_output_tokens: query.getMaxTokens(),
         temperature: query.getTemperature(),
-        tools: query.getToolFunctionSpecs(),
       });
 
       return new Interaction(response).verifyResponse();

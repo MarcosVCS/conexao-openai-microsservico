@@ -1,11 +1,11 @@
 export class RequestDTO {
   gptModel: string;
-  temperature: number;
-  maxTokens: number;
   prompt: string;
-  functionSpecs: any; // DEV: TIPAR
   previousInteractions: any; // DEV: TIPAR
   message: string;
+  maxTokens: number;
+  resoaning: string;
+  temperature: number;
 
   constructor(requestData: any) {
     this.gptModel = requestData.gptModel;
@@ -13,8 +13,8 @@ export class RequestDTO {
     this.previousInteractions = requestData.previousInteractions;
     this.message = requestData.message;
     this.maxTokens = requestData.maxTokens;
+    this.resoaning = requestData.resoaning;
     this.temperature = requestData.temperature;
-    this.functionSpecs = requestData.functionSpecs;
   }
 
   getGPTModel() {
@@ -26,6 +26,9 @@ export class RequestDTO {
   getMaxTokens() {
     return this.maxTokens;
   }
+  getReasoning() {
+    return this.resoaning;
+  }
   getPrompt() {
     return this.prompt;
   }
@@ -34,8 +37,5 @@ export class RequestDTO {
   }
   getMessage() {
     return this.message;
-  }
-  getFunctionSpecs() {
-    return this.functionSpecs;
   }
 }
